@@ -35,7 +35,7 @@ public class PersonController {
         log.info("File name: " + csvFile.getOriginalFilename());
         log.info("File size: " + csvFile.getSize());
 
-        personService.importCSV(csvFile.getInputStream());
+        personService.importCSV(apiEndpointInput, csvFile.getInputStream());
 
         return "person/add";
     }

@@ -15,16 +15,10 @@ public class PersonService {
 
     private final ActionNetworkAPIService actionNetworkAPIService;
 
-    private final PersonSerializer personSerializer;
-
-    public PersonService(ActionNetworkAPIService actionNetworkAPIService, PersonSerializer personSerializer) {
+    public PersonService(ActionNetworkAPIService actionNetworkAPIService) {
         this.actionNetworkAPIService = actionNetworkAPIService;
-        this.personSerializer = personSerializer;
     }
-
-
-
-    public void importCSV(InputStream csvFileStream) throws JsonProcessingException {
+    public void importCSV(String apiEndpoint, InputStream csvFileStream) throws JsonProcessingException {
         InputStreamReader inputStreamReader = new InputStreamReader(csvFileStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -39,6 +33,8 @@ public class PersonService {
                             throw new RuntimeException(e);
                         }
                     })
-                    .forEach(ActionNetworkAPIService::addPerson);
+                    .forEach(serializedPerson -> {
+                        actionNetworkAPIService.addPerson(serializedPerson, apiEndpoint);
+                    });
     }
 }
