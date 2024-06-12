@@ -1,9 +1,10 @@
 package org.trappmichael.actionnetworkuploader.models;
 
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 @Data
+@JsonSerialize(using = PersonSerializer.class)
 public class Person {
 
     private String firstName;
