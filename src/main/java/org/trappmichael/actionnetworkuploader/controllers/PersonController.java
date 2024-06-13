@@ -2,14 +2,19 @@ package org.trappmichael.actionnetworkuploader.controllers;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.trappmichael.actionnetworkuploader.models.ActionNetworkEntity;
+import org.trappmichael.actionnetworkuploader.services.ActionNetworkAPIService;
 import org.trappmichael.actionnetworkuploader.services.PersonService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/person")
@@ -18,12 +23,37 @@ public class PersonController {
 
     private final PersonService personService;
 
-    public PersonController(PersonService personService) {
+    private final ActionNetworkAPIService actionNetworkAPIService;
+
+    private String formationSelection;
+
+    private String typeSelection;
+
+
+    public PersonController(PersonService personService, ActionNetworkAPIService actionNetworkAPIService) {
         this.personService = personService;
+        this.actionNetworkAPIService = actionNetworkAPIService;
+    }
+
+    @GetMapping("/select")
+    public String displaySelectEntityForm() {
+        return "person/select";
+    }
+
+    @PostMapping("/select")
+    public String processSelectEntityForm(@RequestParam String formation,
+                                          @RequestParam String type) {
+        formationSelection = formation;
+        typeSelection = type;
+
+        return "person/add";
     }
 
     @GetMapping("/add")
-    public String displayPersonImportForm() {
+    public String displayPersonImportForm(Model model) {
+
+        List<ActionNetworkEntity> entities = actionNetworkAPIService.getEntities(formationSelection,typeSelection);
+
         return "person/add";
     }
 

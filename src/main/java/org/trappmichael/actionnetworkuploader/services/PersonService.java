@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.trappmichael.actionnetworkuploader.models.Person;
-import org.trappmichael.actionnetworkuploader.models.PersonSerializer;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -18,7 +17,7 @@ public class PersonService {
     public PersonService(ActionNetworkAPIService actionNetworkAPIService) {
         this.actionNetworkAPIService = actionNetworkAPIService;
     }
-    public void importCSV(String apiEndpoint, InputStream csvFileStream) throws JsonProcessingException {
+    public void importCSV(String apiEndpoint, InputStream csvFileStream) {
         InputStreamReader inputStreamReader = new InputStreamReader(csvFileStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
