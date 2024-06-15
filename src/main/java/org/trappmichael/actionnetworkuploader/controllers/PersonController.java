@@ -1,5 +1,6 @@
 package org.trappmichael.actionnetworkuploader.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,11 +47,14 @@ public class PersonController {
         formationSelection = formation;
         typeSelection = type;
 
-        return "person/add";
+        System.out.println(formationSelection);
+        System.out.println(typeSelection);
+
+        return "redirect:add";
     }
 
     @GetMapping("/add")
-    public String displayPersonImportForm(Model model) {
+    public String displayPersonImportForm() throws JsonProcessingException {
 
         List<ActionNetworkEntity> entities = actionNetworkAPIService.getEntities(formationSelection,typeSelection);
 

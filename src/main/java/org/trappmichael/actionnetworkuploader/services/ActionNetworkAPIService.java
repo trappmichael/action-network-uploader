@@ -1,12 +1,18 @@
 package org.trappmichael.actionnetworkuploader.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.trappmichael.actionnetworkuploader.models.ActionNetworkEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,12 +38,30 @@ public class ActionNetworkAPIService {
         System.out.println(result.getStatusCode());
     }
 
-    public List<ActionNetworkEntity> getEntities(String formationSelection, String typeSelection) {
+    public List<ActionNetworkEntity> getEntities(String formationSelection, String typeSelection) throws JsonProcessingException {
 
-        return actionNetworkRestClient.get()
+        String jsonResponse = actionNetworkRestClient.get()
                 .uri(typeSelection)
+                .header("Content-Type", "application/json")
                 .header("OSDI-API-Token", ACTIONNETWORK_API_KEY)
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<ActionNetworkEntity>>() {});
+                .body(String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonResponse);
+
+        System.out.println(prettyJson);
+
+//        JsonNode actionNetworkEntityNode = new ObjectMapper().readTree(jsonResponse);
+
+        ActionNetworkEntity sample = new ActionNetworkEntity("form", "event", "38f8f");
+
+        List<ActionNetworkEntity> sampleList = new ArrayList<>();
+
+        sampleList.add(sample);
+
+        return sampleList;
+
     }
 }

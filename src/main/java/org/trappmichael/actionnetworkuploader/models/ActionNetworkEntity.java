@@ -1,6 +1,10 @@
 package org.trappmichael.actionnetworkuploader.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+
+import java.util.Map;
 
 @Data
 public class ActionNetworkEntity {
