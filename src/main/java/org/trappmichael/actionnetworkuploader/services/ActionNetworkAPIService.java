@@ -13,7 +13,9 @@ import org.springframework.web.client.RestClient;
 import org.trappmichael.actionnetworkuploader.models.ActionNetworkEntity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ActionNetworkAPIService {
@@ -40,6 +42,10 @@ public class ActionNetworkAPIService {
 
     public List<ActionNetworkEntity> getEntities(String formationSelection, String typeSelection) throws JsonProcessingException {
 
+        String entityType;
+        int pages;
+        List<ActionNetworkEntity> actionNetworkEntities = new ArrayList<>();
+
         String jsonResponse = actionNetworkRestClient.get()
                 .uri(typeSelection)
                 .header("Content-Type", "application/json")
@@ -47,21 +53,58 @@ public class ActionNetworkAPIService {
                 .retrieve()
                 .body(String.class);
 
-        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actionNetworkEntityNode = new ObjectMapper().readTree(jsonResponse);
 
-        String prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonResponse);
+        pages = actionNetworkEntityNode.get("total_pages").asInt();
 
-        System.out.println(prettyJson);
+        List<JsonNode> actionNetworkEntitiesAsJson = StreamSupport
+                .stream(actionNetworkEntityNode.get("_embedded").get("osdi:"+ typeSelection).spliterator(),false)
+                .toList();
 
-//        JsonNode actionNetworkEntityNode = new ObjectMapper().readTree(jsonResponse);
+        for (JsonNode actionNetworkEntityAsJson : actionNetworkEntitiesAsJson) {
 
-        ActionNetworkEntity sample = new ActionNetworkEntity("form", "event", "38f8f");
+            ActionNetworkEntity actionNetworkEntity = new ActionNetworkEntity();
 
-        List<ActionNetworkEntity> sampleList = new ArrayList<>();
+            actionNetworkEntity.setType(typeSelection);
+            actionNetworkEntity.setTitle(actionNetworkEntityAsJson.get("title").asText());
+            actionNetworkEntity.setEndpoint(actionNetworkEntityAsJson.get("identifiers").elements().next().asText().replaceAll("action_network:", ""));
 
-        sampleList.add(sample);
+            actionNetworkEntities.add(actionNetworkEntity);
+        }
 
-        return sampleList;
+        if (pages > 1) {
+
+            for (int i = 2; i <= pages; i++) {
+
+                jsonResponse = actionNetworkRestClient.get()
+                        .uri(typeSelection + "?page=" + i)
+                        .header("Content-Type", "application/json")
+                        .header("OSDI-API-Token", ACTIONNETWORK_API_KEY)
+                        .retrieve()
+                        .body(String.class);
+
+                actionNetworkEntitiesAsJson.removeAll(actionNetworkEntitiesAsJson);
+
+                actionNetworkEntitiesAsJson = StreamSupport
+                        .stream(actionNetworkEntityNode.get("_embedded").get("osdi:"+ typeSelection).spliterator(),false)
+                        .toList();
+
+                for (JsonNode actionNetworkEntityAsJson : actionNetworkEntitiesAsJson) {
+
+                    ActionNetworkEntity actionNetworkEntity = new ActionNetworkEntity();
+
+                    actionNetworkEntity.setType(typeSelection);
+                    actionNetworkEntity.setTitle(actionNetworkEntityAsJson.get("title").asText());
+                    actionNetworkEntity.setEndpoint(actionNetworkEntityAsJson.get("identifiers").elements().next().asText().replaceAll("action_network:", ""));
+
+                    actionNetworkEntities.add(actionNetworkEntity);
+                }
+            }
+        }
+
+        System.out.println(actionNetworkEntities);
+
+        return actionNetworkEntities;
 
     }
 }

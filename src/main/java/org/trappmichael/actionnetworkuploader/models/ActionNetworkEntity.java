@@ -12,6 +12,8 @@ public class ActionNetworkEntity {
     String title;
     String endpoint;
 
+    public ActionNetworkEntity() {}
+
     public ActionNetworkEntity(String type, String title, String endpoint) {
         this.type = type;
         this.title = title;
