@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
+@JsonDeserialize(using = ActionNetworkEntityDeserializer.class)
 public class ActionNetworkEntity {
     String type;
     String title;

@@ -4,17 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.trappmichael.actionnetworkuploader.models.ActionNetworkEntity;
 import org.trappmichael.actionnetworkuploader.services.ActionNetworkAPIService;
 import org.trappmichael.actionnetworkuploader.services.PersonService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -54,22 +50,21 @@ public class PersonController {
     }
 
     @GetMapping("/add")
-    public String displayPersonImportForm() throws JsonProcessingException {
+    public String displayPersonImportForm(Model model) throws JsonProcessingException {
 
         List<ActionNetworkEntity> entities = actionNetworkAPIService.getEntities(formationSelection,typeSelection);
+
+        model.addAttribute("actionNetworkEntities", entities);
+        model.addAttribute("entityType", typeSelection.substring(0,typeSelection.length()-1));
 
         return "person/add";
     }
 
     @PostMapping("/add")
-    public String processPersonImportForm(@RequestParam String apiEndpointInput,
+    public String processPersonImportForm(@RequestParam("actionNetworkEntitySelector") String endpoint,
                                           @RequestParam MultipartFile csvFile) throws IOException {
 
-        log.info("API Endpoint: " + apiEndpointInput);
-        log.info("File name: " + csvFile.getOriginalFilename());
-        log.info("File size: " + csvFile.getSize());
-
-        personService.importCSV(apiEndpointInput, csvFile.getInputStream());
+        personService.importCSV(typeSelection, endpoint, csvFile.getInputStream());
 
         return "person/add";
     }

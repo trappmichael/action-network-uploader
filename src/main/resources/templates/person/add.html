@@ -12,10 +12,11 @@
          <div class="card-body col-11 mx-auto">
             <h5 class="card-title text-center">Action Network Upload Form</h5>
             <form method="post" enctype="multipart/form-data">
-               <div class="form-group mb-3">
-                  <label class="mb-3" for="apiEndpointInput">Where do you want to add your list?</label>
-                  <input class="form-control" type="text" id="apiEndpointInput" name="apiEndpointInput" placeholder="Input API endpoint" aria-label="default">
-               </div>
+               <label class="mb-3" for="actionNetworkEntitySelector" th:text="${'Which ' + entityType + ' would you like to import your data to?'}"></label>
+               <select class="form-select mb-3" id="actionNetworkEntitySelector" name="actionNetworkEntitySelector" aria-label="Default select example">
+                  <option selected th:text="${'Select a ' + entityType}"></option>
+                  <option th:each="actionNetworkEntity : ${actionNetworkEntities}" th:text="${actionNetworkEntity.title}" th:value="${actionNetworkEntity.endpoint}"></option>
+               </select>
                <div class="form-group mb-3">
                   <label class="mb-3" for="csvFile">Upload your .csv file here:</label>
                   <input class="form-control" type="file" id="csvFile" name="csvFile">

@@ -17,7 +17,7 @@ public class PersonService {
     public PersonService(ActionNetworkAPIService actionNetworkAPIService) {
         this.actionNetworkAPIService = actionNetworkAPIService;
     }
-    public void importCSV(String apiEndpoint, InputStream csvFileStream) {
+    public void importCSV(String actionNetworkEntityType, String actionNetworkEntityApiEndpoint, InputStream csvFileStream) {
         InputStreamReader inputStreamReader = new InputStreamReader(csvFileStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
@@ -27,13 +27,15 @@ public class PersonService {
                     .map(Person::parse)
                     .map(person -> {
                         try {
+                            System.out.println(person);
                             return new ObjectMapper().writeValueAsString(person);
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
                         }
                     })
                     .forEach(serializedPerson -> {
-                        actionNetworkAPIService.addPerson(serializedPerson, apiEndpoint);
+                        System.out.println(serializedPerson);
+                        actionNetworkAPIService.addPerson(serializedPerson, actionNetworkEntityType, actionNetworkEntityApiEndpoint);
                     });
     }
 }
