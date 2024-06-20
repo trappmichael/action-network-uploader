@@ -1,9 +1,10 @@
-package org.trappmichael.actionnetworkuploader.models;
+package org.trappmichael.actionnetworkuploader.components;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.springframework.stereotype.Component;
+import org.trappmichael.actionnetworkuploader.models.Person;
 
 import java.io.IOException;
 @Component
@@ -17,6 +18,8 @@ public class PersonSerializer extends StdSerializer<Person> {
         super(t);
     }
 
+    // Takes in a Person java object and writes a json string to represent it that is
+    // compatible with the Action Network API
     @Override
     public void serialize(Person person, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartObject();

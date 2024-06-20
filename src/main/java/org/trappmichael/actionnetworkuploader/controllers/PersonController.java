@@ -32,38 +32,52 @@ public class PersonController {
         this.actionNetworkAPIService = actionNetworkAPIService;
     }
 
+    // Display the select.html view containing a form for selecting a formation and
+    // Action Network entity type (i.e., form, event, petition).
     @GetMapping("/select")
     public String displaySelectEntityForm() {
         return "person/select";
     }
 
+    // Processes form in the select.html view
     @PostMapping("/select")
     public String processSelectEntityForm(@RequestParam String formation,
                                           @RequestParam String type) {
-        formationSelection = formation;
-        typeSelection = type;
 
-        System.out.println(formationSelection);
-        System.out.println(typeSelection);
+        // Initializes formationSelection variable with the name of the formation selected in the form
+        formationSelection = formation;
+
+        // Initializes typeSelection variable with the name of the Action Network entity type
+        // (i.e., form, event, or petition) selected in the form
+        typeSelection = type;
 
         return "redirect:add";
     }
 
+    // Display the add.html view containing a form for selecting a specific Action Network entity
+    // and uploading a .csv file of person records.
     @GetMapping("/add")
     public String displayPersonImportForm(Model model) throws JsonProcessingException {
 
+        // Searches the Action Network API for Action Network entities within the selected
+        // formation and of the selected type and loads them into an array list.
         List<ActionNetworkEntity> entities = actionNetworkAPIService.getEntities(formationSelection,typeSelection);
 
+        // Adds the entities array list and typeSelection as attributes to the model object used
+        // to render the import form.
         model.addAttribute("actionNetworkEntities", entities);
         model.addAttribute("entityType", typeSelection.substring(0,typeSelection.length()-1));
 
         return "person/add";
     }
 
+    // Processes form in the add.html view and imports records in .csv file to Action Network
     @PostMapping("/add")
     public String processPersonImportForm(@RequestParam("actionNetworkEntitySelector") String endpoint,
                                           @RequestParam MultipartFile csvFile) throws IOException {
 
+        // Imports the .csv file of Action Network person records to the API endpoint of the Action Network
+        // entity selected in the form.
         personService.importCSV(typeSelection, endpoint, csvFile.getInputStream());
 
         return "person/add";

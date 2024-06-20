@@ -24,6 +24,8 @@ public class ActionNetworkAPIService {
                 .baseUrl("https://actionnetwork.org/api/v2/")
                 .build();
     }
+
+    // Add a person record to an Action Network API endpoint
     public void addPerson(String serializedPerson, String actionNetworkEntityType, String actionNetworkEntityApiEndpoint) {
 
         String importType = null;
@@ -36,10 +38,6 @@ public class ActionNetworkAPIService {
             importType = "signatures";
         }
 
-        System.out.println(actionNetworkEntityType);
-        System.out.println(actionNetworkEntityApiEndpoint);
-        System.out.println(importType);
-
         ResponseEntity<String> result = actionNetworkRestClient.post()
                 .uri(actionNetworkEntityType + "/" + actionNetworkEntityApiEndpoint + "/" + importType)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -47,9 +45,9 @@ public class ActionNetworkAPIService {
                 .retrieve()
                 .toEntity(String.class);
 
-        System.out.println(result.getStatusCode());
     }
 
+    // Retrieve an array list of Action Network entities of the selected type from the selected formation
     public List<ActionNetworkEntity> getEntities(String formationSelection, String typeSelection) throws JsonProcessingException {
 
         List<ActionNetworkEntity> actionNetworkEntities = new ArrayList<>();
@@ -61,8 +59,12 @@ public class ActionNetworkAPIService {
                 .retrieve()
                 .body(String.class);
 
+        // Maps the nodes of the json response containing the Action Network entities
         JsonNode jsonResponseNode = new ObjectMapper().readTree(jsonResponse);
 
+        // Travels to the node containing an array list of json objects representing individual
+        // Action Network entities, serializes each of them as an ActionNetworkEntity java object,
+        // and adds the new ActionNetworkEntity java object to an array list.
         StreamSupport.stream(jsonResponseNode.get("_embedded").get("osdi:"+ typeSelection).spliterator(),false)
                 .forEach(actionNetworkEntity -> {
                     try {
@@ -73,8 +75,12 @@ public class ActionNetworkAPIService {
                     }
                 });
 
+        // The Action Network API returns a maximum of 25 entities per response. Retrieves the
+        // total number of pages of entities.
         int pages = jsonResponseNode.get("total_pages").asInt();
 
+        // If the total number of pages of response entities is greater than 1, repeats the process above
+        // of retrieving entities from the Action Network API for each page of available entities.
         if (pages > 1) {
 
             for (int i = 2; i <= pages; i++) {
@@ -102,8 +108,6 @@ public class ActionNetworkAPIService {
                         });
             }
         }
-
-        System.out.println(actionNetworkEntities);
 
         return actionNetworkEntities;
 

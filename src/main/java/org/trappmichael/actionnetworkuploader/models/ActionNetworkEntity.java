@@ -1,10 +1,8 @@
 package org.trappmichael.actionnetworkuploader.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-
-import java.util.Map;
+import org.trappmichael.actionnetworkuploader.components.ActionNetworkEntityDeserializer;
 
 @Data
 @JsonDeserialize(using = ActionNetworkEntityDeserializer.class)
