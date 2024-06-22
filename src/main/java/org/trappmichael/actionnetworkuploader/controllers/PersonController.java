@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.trappmichael.actionnetworkuploader.models.ActionNetworkEntity;
 import org.trappmichael.actionnetworkuploader.services.ActionNetworkAPIService;
@@ -67,6 +70,7 @@ public class PersonController {
         // to render the import form.
         model.addAttribute("actionNetworkEntities", entities);
         model.addAttribute("entityType", typeSelection.substring(0,typeSelection.length()-1));
+        model.addAttribute("typeSelection", typeSelection);
 
         return "person/add";
     }
@@ -80,6 +84,16 @@ public class PersonController {
         // entity selected in the form.
         personService.importCSV(typeSelection, endpoint, csvFile.getInputStream());
 
-        return "person/add";
+        return "redirect:success";
+    }
+
+    @GetMapping("/success")
+    public String displaySuccessForm() {
+        return "person/success";
+    }
+
+    @PostMapping("/success")
+    public String processSuccessForm() {
+        return "redirect:select";
     }
 }
