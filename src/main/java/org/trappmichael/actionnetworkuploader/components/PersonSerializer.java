@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.springframework.stereotype.Component;
 import org.trappmichael.actionnetworkuploader.models.Person;
+import org.trappmichael.actionnetworkuploader.models.Tag;
 
 import java.io.IOException;
 @Component
@@ -23,16 +24,26 @@ public class PersonSerializer extends StdSerializer<Person> {
     @Override
     public void serialize(Person person, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartObject();
-        jgen.writeObjectFieldStart("person");
-        jgen.writeStringField("family_name", person.getLastName());
-        jgen.writeStringField("given_name", person.getFirstName());
-        jgen.writeArrayFieldStart("email_addresses");
-        jgen.writeStartObject();
-        jgen.writeStringField("address", person.getEmail());
-        jgen.writeStringField("status", "subscribed");
-        jgen.writeEndObject();
-        jgen.writeEndArray();
-        jgen.writeEndObject();
+            jgen.writeObjectFieldStart("person");
+                jgen.writeStringField("family_name", person.getLastName());
+                jgen.writeStringField("given_name", person.getFirstName());
+                jgen.writeArrayFieldStart("email_addresses");
+                    jgen.writeStartObject();
+                        jgen.writeStringField("address", person.getEmail());
+                        jgen.writeStringField("status", "subscribed");
+                    jgen.writeEndObject();
+                jgen.writeEndArray();
+            jgen.writeEndObject();
+            jgen.writeArrayFieldStart("add_tags");
+                for (Tag tag : person.getTags()) {
+                    jgen.writeString(tag.getName());
+                }
+            jgen.writeEndArray();
+            jgen.writeObjectFieldStart("triggers");
+                jgen.writeObjectFieldStart("autoresponse");
+                    jgen.writeBooleanField("enabled",false);
+                jgen.writeEndObject();
+            jgen.writeEndObject();
         jgen.writeEndObject();
     }
 }
