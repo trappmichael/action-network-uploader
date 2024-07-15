@@ -30,7 +30,11 @@ public class PersonSerializer extends StdSerializer<Person> {
                 jgen.writeArrayFieldStart("email_addresses");
                     jgen.writeStartObject();
                         jgen.writeStringField("address", person.getEmail());
-                        jgen.writeStringField("status", "subscribed");
+                    jgen.writeEndObject();
+                jgen.writeEndArray();
+                jgen.writeArrayFieldStart("phone_numbers");
+                    jgen.writeStartObject();
+                        jgen.writeStringField("number", person.getPhone());
                     jgen.writeEndObject();
                 jgen.writeEndArray();
             jgen.writeEndObject();

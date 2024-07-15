@@ -28,7 +28,7 @@ public class PersonService {
         Reader reader = new InputStreamReader(csvFileStream);
 
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                .setHeader("firstName", "lastName", "email", "tags")
+                .setHeader("firstName", "lastName", "email", "phone", "tags")
                 .setSkipHeaderRecord(true)
                 .build();
 
